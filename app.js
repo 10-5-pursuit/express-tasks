@@ -1,14 +1,14 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const tasksController = require('./controllers/tasksController')
+const usersController = require('./controllers/usersController')
 
 
 // Middleware
 app.use(cors())
 app.use(express.json())
-// localhost:4001/tasks
-app.use('/tasks', tasksController)
+// localhost:4001/users
+app.use('/users', usersController)
 
 
 

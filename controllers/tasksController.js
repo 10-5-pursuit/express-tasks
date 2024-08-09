@@ -1,13 +1,14 @@
 const express = require('express')
-const tasks = express.Router()
+const tasks = express.Router({ mergeParams: true })
 const { getTasks, getTask, createTask, updateTask, deleteTask } = require('../queries/tasks')
 const { checkTitle } = require('../validations/tasks')
 
-// GET ALL tasks
-// localhost:4001/tasks/
+// GET ALL tasks for a specific user
+// localhost:4001/users/5/tasks/
 tasks.get('/', async (req, res) => {
     try {
-        const tasks = await getTasks()
+        const { user_id } = req.params
+        const tasks = await getTasks(user_id)
         res.status(200).json(tasks)
     } catch (err) {
         res.status(404).json({ error: err })
@@ -15,11 +16,11 @@ tasks.get('/', async (req, res) => {
 })
 
 // GET ONE task
-// localhost:4001/tasks/3
+// localhost:4001/users/4/tasks/8
 tasks.get('/:id', async (req, res) => {
     try {
-        const { id } = req.params
-        const task = await getTask(id)
+        const { id, user_id } = req.params
+        const task = await getTask(id, user_id)
         if(task.task_id){
             res.status(200).json(task)
         } else {
@@ -32,10 +33,11 @@ tasks.get('/:id', async (req, res) => {
 
 
 // CREATE a task
-// localhost:4001/tasks/
+// localhost:4001/users/5/tasks/
 tasks.post('/', checkTitle, async (req, res) => {
     try {
-        const newTask = await createTask(req.body)
+        const { user_id } = req.params
+        const newTask = await createTask({ ...req.body, user_id: user_id })
         res.status(201).json(newTask)   
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" })
